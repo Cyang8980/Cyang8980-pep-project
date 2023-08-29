@@ -7,7 +7,9 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-
+/*
+ * message creations, message updates, and message deletions
+ */
 
 public class MessageDAO {
     /*
@@ -35,6 +37,35 @@ public class MessageDAO {
         }
         return messages;
     }
+    /*
+     * deleting a message
+     */
+    public void deleteMessageByMessageID(int message_id) {
+        Connection connection = ConnectionUtil.getConnection();
+        List<Message> messages = new ArrayList<>();
+        try {
+            //Write SQL logic here
+            String sql = "DELETE FROM message WHERE message_id = (?)";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setInt(1, message_id);
+            ResultSet rs = preparedStatement.executeQuery();
+            while(rs.next()){
+                Message message = new Message(
+                        rs.getInt("message_id"),
+                        rs.getInt("posted_by"),
+                        rs.getString("message_text"),
+                        rs.getLong("time_posted_epoch")
+                        );
+                messages.remove(message);
+            }
+        }catch(SQLException e){
+            System.out.println(e.getMessage());
+        }
+    }
+    /*
+     * inserting a message
+     */
+
     public Message insertMessage(Message message) {
         Connection connection = ConnectionUtil.getConnection();
         try {
