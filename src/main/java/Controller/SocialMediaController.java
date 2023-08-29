@@ -1,5 +1,6 @@
 package Controller;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -39,6 +40,7 @@ public class SocialMediaController {
         app.post("/messages", this::postMessageHandler); // works
         app.delete("/messages/1",this::deleteMessageHandler);
         app.get("/message/1",this::getAllMessagesByIDHandler);
+        app.post("/login", this::accountLogin);
         // app.get("/accounts/1/messages",this::getAllMessagesFromUserHandler);
         return app;
     }
@@ -96,5 +98,18 @@ public class SocialMediaController {
         int message_id = Integer.parseInt(ctx.pathParam("message_id"));
         List<Message> message = messageService.getAllMessagesByID(message_id);
         ctx.json(message);
+    }
+    public void accountLogin(Context ctx){
+        // Extract user input from the request
+        String username = ctx.formParam("username");
+        String password = ctx.formParam("password");
+
+        Account loggedInAccount = accountService.login(username, password);
+        
+        if (loggedInAccount != null) {
+            ctx.status(200); // OK
+        } else {
+            ctx.status(401); // Unauthorized
+        }
     }
 }

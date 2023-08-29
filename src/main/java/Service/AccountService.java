@@ -4,6 +4,7 @@ package Service;
 import Model.Account;
 import DAO.AccountDAO;
 
+import java.sql.SQLException;
 import java.util.List;
 
 public class AccountService {
@@ -23,5 +24,8 @@ public class AccountService {
 
     public Account addAccount(Account account) {
         return accountDAO.insertAccount(account);
+    }
+    public Account login (String username, String password) {
+        return accountDAO.AccountExists(username, password);
     }
 }
