@@ -37,7 +37,6 @@ public class SocialMediaController {
         app.post("/accounts", this::postAccountHandler);
         app.get("/messages", this::getAllMessagesHandler);
         app.post("/messages", this::postMessageHandler);
-        
         return app;
     }
 
