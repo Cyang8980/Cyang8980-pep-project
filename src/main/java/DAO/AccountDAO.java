@@ -59,23 +59,42 @@ public class AccountDAO {
     public Account insertAccount(Account account) {
         Connection connection = ConnectionUtil.getConnection();
         try {
-            //Write SQL logic here. You should only be inserting with the name column, so that the database may
-            //automatically generate a primary key.
-            String sql = "INSERT INTO account (username) (password) VALUES (?,?)";
+            if (usernameExists(connection, account.getUsername())) {
+                System.out.println("Username already exists");
+                return null;
+            }
+            
+            // Write SQL logic here to insert the account record
+            String sql = "INSERT INTO account (username, password) VALUES (?, ?)";
             PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             
-            //write preparedStatement's setString method here.
+            // Set username and password
             preparedStatement.setString(1, account.getUsername());
             preparedStatement.setString(2, account.getPassword());
             preparedStatement.executeUpdate();
+            
             ResultSet pkeyResultSet = preparedStatement.getGeneratedKeys();
-            if(pkeyResultSet.next()){
-                int generated_account_id = (int) pkeyResultSet.getLong(1);
-                return new Account(generated_account_id, account.getUsername(), account.getPassword());
+            if (pkeyResultSet.next()) {
+                if (account.getUsername() != "" && account.getPassword().length() > 4) {
+                    int generated_account_id = (int) pkeyResultSet.getLong(1);
+                    return new Account(generated_account_id, account.getUsername(), account.getPassword());
+                }
             }
-        }catch(SQLException e){
+        } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
         return null;
+    }
+    
+    private boolean usernameExists(Connection connection, String username) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM account WHERE username = ?";
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setString(1, username);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        if (resultSet.next()) {
+            int count = resultSet.getInt(1);
+            return count > 0;
+        }
+        return false;
     }
 }

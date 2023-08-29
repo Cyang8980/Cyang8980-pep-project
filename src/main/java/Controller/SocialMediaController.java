@@ -34,10 +34,12 @@ public class SocialMediaController {
     public Javalin startAPI() {
         Javalin app = Javalin.create();
         app.get("/accounts", this::getAllAccountsHandler);
-        app.post("/accounts", this::postAccountHandler);
-        app.get("/messages", this::getAllMessagesHandler);
-        app.post("/messages", this::postMessageHandler);
-        app.delete("/messages/{id}", this::deleteMessageHandler);
+        app.post("/register", this::postAccountHandler); // works
+        app.get("/messages", this::getAllMessagesHandler); // works
+        app.post("/messages", this::postMessageHandler); // works
+        app.delete("/messages/1",this::deleteMessageHandler);
+        app.get("/message/1",this::getAllMessagesByIDHandler);
+        // app.get("/accounts/1/messages",this::getAllMessagesFromUserHandler);
         return app;
     }
 
@@ -81,14 +83,18 @@ public class SocialMediaController {
         ctx.json(message);
     }
 
-    private void deleteMessageHandler(Context ctx) {
-        ObjectMapper mapper = new ObjectMapper();
+    private void deleteMessageHandler(Context ctx) { 
         int message_id = Integer.parseInt(ctx.pathParam("message_id"));
         boolean deletionSuccessful = messageService.deleteMessageByMessageID(message_id);
         if (deletionSuccessful) {
-            ctx.status(200);
+            ctx.status(200); // OK
         } else {
-            ctx.status(404);
+            ctx.status(404); // Not Found
         }
+    }
+    public void getAllMessagesByIDHandler(Context ctx) {
+        int message_id = Integer.parseInt(ctx.pathParam("message_id"));
+        List<Message> message = messageService.getAllMessagesByID(message_id);
+        ctx.json(message);
     }
 }

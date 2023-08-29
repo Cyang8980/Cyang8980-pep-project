@@ -94,18 +94,30 @@ public class MessageDAO {
      * get all messgages given username
      */
 
-     public void getAllMessageByUser(int message_id) {
+     public List<Message> getMessageByID(int message_id) {
         Connection connection = ConnectionUtil.getConnection();
+        List<Message> messages = new ArrayList<>();
         try {
             //Write SQL logic here
             String sql = "SELECT * FROM message WHERE message_id = ?";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setInt(1, message_id);
-            preparedStatement.executeQuery();
-            
+            ResultSet rs = preparedStatement.executeQuery();
+            while(rs.next()){
+                Message message = new Message(
+                        rs.getInt("message_id"),
+                        rs.getInt("posted_by"),
+                        rs.getString("message_text"),
+                        rs.getLong("time_posted_epoch")
+                        );
+                if (rs.getInt("message_id") == message_id) {
+                    messages.add(message);
+                }
+            }
         }catch(SQLException e){
             System.out.println(e.getMessage());
         }
+        return messages;
      }
 }
 
