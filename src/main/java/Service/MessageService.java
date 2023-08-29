@@ -8,15 +8,14 @@ import java.util.List;
 
 public class MessageService {
 
-public class AccountService {
     private MessageDAO messageDAO;
 
 
-    public AccountService(){
+    public MessageService(){
         messageDAO = new MessageDAO();
     }
 
-    public AccountService(MessageDAO accountDAO){
+    public MessageService(MessageDAO accountDAO){
         this.messageDAO = accountDAO;
     }
 
@@ -24,8 +23,7 @@ public class AccountService {
         return messageDAO.getAllMessages();
     }
 
-    public Message addAccount(Message message) {
+    public Message addedMessage(Message message) {
         return messageDAO.insertMessage(message);
     }
-}
 }
