@@ -40,17 +40,19 @@ public class MessageDAO {
     /*
      * deleting a message
      */
-    public void deleteMessageByMessageID(int message_id) {
+    public boolean deleteMessageByMessageID(int message_id) {
         Connection connection = ConnectionUtil.getConnection();
         try {
             //Write SQL logic here
             String sql = "DELETE FROM message WHERE message_id = ?";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setInt(1, message_id);
-            preparedStatement.executeUpdate();
-            
+            int rowsAffected = preparedStatement.executeUpdate();
+            return rowsAffected > 0;
+
         }catch(SQLException e){
             System.out.println(e.getMessage());
+            return false;
         }
     }
     /*
@@ -87,4 +89,23 @@ public class MessageDAO {
         }
         return null;
     }
+    
+    /*
+     * get all messgages given username
+     */
+
+     public void getAllMessageByUser(int message_id) {
+        Connection connection = ConnectionUtil.getConnection();
+        try {
+            //Write SQL logic here
+            String sql = "SELECT * FROM message WHERE message_id = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setInt(1, message_id);
+            preparedStatement.executeQuery();
+            
+        }catch(SQLException e){
+            System.out.println(e.getMessage());
+        }
+     }
 }
+

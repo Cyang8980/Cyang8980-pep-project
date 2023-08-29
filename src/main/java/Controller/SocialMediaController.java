@@ -37,6 +37,7 @@ public class SocialMediaController {
         app.post("/accounts", this::postAccountHandler);
         app.get("/messages", this::getAllMessagesHandler);
         app.post("/messages", this::postMessageHandler);
+        app.delete("/messages/{id}", this::deleteMessageHandler);
         return app;
     }
 
@@ -75,12 +76,19 @@ public class SocialMediaController {
         }
     }
 
-    public void getAllMessagesHandler(Context ctx){
+    public void getAllMessagesHandler(Context ctx) {
         List<Message> message = messageService.getAllMessages();
         ctx.json(message);
     }
 
-    // private void deleteMessage(Context ctx) {
-    //     ctx.json(messageService.deleteMessageByMessageID(ctx.));
-    // }
+    private void deleteMessageHandler(Context ctx) {
+        ObjectMapper mapper = new ObjectMapper();
+        int message_id = Integer.parseInt(ctx.pathParam("message_id"));
+        boolean deletionSuccessful = messageService.deleteMessageByMessageID(message_id);
+        if (deletionSuccessful) {
+            ctx.status(200);
+        } else {
+            ctx.status(404);
+        }
+    }
 }
