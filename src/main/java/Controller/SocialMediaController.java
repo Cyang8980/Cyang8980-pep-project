@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import Model.Account;
@@ -38,6 +39,7 @@ public class SocialMediaController {
         app.post("/register", this::postAccountHandler); // works
         app.get("/messages", this::getAllMessagesHandler); // works
         app.post("/messages", this::postMessageHandler); // works
+
 
         app.get("/messages/1",this::getMessageByIDHandler);
         // app.delete("/messages/{message_id}", this::deleteMessageHandler);
@@ -88,7 +90,10 @@ public class SocialMediaController {
         ctx.json(message);
     }
 
-    private void deleteMessageHandler(Context ctx) { 
+
+
+
+    private void deleteMessageByIDHandler(Context ctx) { 
         int message_id = Integer.parseInt(ctx.pathParam("message_id"));
         boolean deletionSuccessful = messageService.deleteMessageByMessageID(message_id);
         if (deletionSuccessful) {
@@ -110,17 +115,16 @@ public class SocialMediaController {
         }
     }
 
-    private void accountLogin(Context ctx){
-        // Extract user input from the request
-        String username = ctx.formParam("username");
-        String password = ctx.formParam("password");
+    private void accountLogin(Context ctx) throws JsonMappingException, JsonProcessingException{
+        ObjectMapper mapper = new ObjectMapper();
+        Account account = mapper.readValue(ctx.body(), Account.class);
 
-        Account loggedInAccount = accountService.login(username, password);
+        Account loggedInAccount = accountService.addAccount(account);
         
         if (loggedInAccount != null) {
-            ctx.status(200); // OK
+            ctx.status(200);
         } else {
-            ctx.status(401); // Unauthorized
+            ctx.status(401);
         }
     }
 }
