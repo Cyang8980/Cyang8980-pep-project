@@ -97,6 +97,7 @@ public class AccountDAO {
         }
         return false;
     }
+    
     public Account AccountExists(String username, String password) {
         try{
             Connection connection = ConnectionUtil.getConnection();

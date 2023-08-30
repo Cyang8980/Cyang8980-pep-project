@@ -39,13 +39,13 @@ public class SocialMediaController {
         app.post("/register", this::postAccountHandler); // works
         app.get("/messages", this::getAllMessagesHandler); // works
         app.post("/messages", this::postMessageHandler); // works
+        app.post("/login", this::accountLogin); // works
 
-
-        app.get("/messages/1",this::getMessageByIDHandler);
+        // app.get("/messages/1",this::getMessageByIDHandler); 
         // app.delete("/messages/{message_id}", this::deleteMessageHandler);
 
-        app.get("/message/1",this::getMessageByIDHandler);
-        app.post("/login", this::accountLogin);
+        app.get("/messages/{message_id}",this::getMessageByIDHandler);
+
         // app.get("/accounts/1/messages",this::getAllMessagesFromUserHandler);
         return app;
     }
@@ -105,11 +105,11 @@ public class SocialMediaController {
 
     private void getMessageByIDHandler(Context ctx) {
         int message_id = Integer.parseInt(ctx.pathParam("message_id"));
-        List<Message> message = messageService.getMessagesByID(message_id);
+        Message message = messageService.getMessageByID(message_id);
     
         if (message != null) {
-            ctx.status(200); // OK
             ctx.json(message);
+            ctx.status(200); // OK
         } else {
             ctx.status(404); // Not Found
         }
@@ -118,13 +118,14 @@ public class SocialMediaController {
     private void accountLogin(Context ctx) throws JsonMappingException, JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         Account account = mapper.readValue(ctx.body(), Account.class);
-        
+    
         String username = account.getUsername();
         String password = account.getPassword();
     
         Account loggedInAccount = accountService.login(username, password);
-        
+    
         if (loggedInAccount != null) {
+            ctx.json(mapper.writeValueAsString(loggedInAccount));
             ctx.status(200); // OK
         } else {
             ctx.status(401); // Unauthorized

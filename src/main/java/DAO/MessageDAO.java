@@ -52,8 +52,8 @@ public class MessageDAO {
 
         }catch(SQLException e){
             System.out.println(e.getMessage());
-            return false;
         }
+        return false;
     }
     /*
      * inserting a message
@@ -94,9 +94,8 @@ public class MessageDAO {
      * get all messgages given username
      */
 
-     public List<Message> getMessageByID(int message_id) {
+     public Message getMessageByID(int message_id) {
         Connection connection = ConnectionUtil.getConnection();
-        List<Message> messages = new ArrayList<>();
         try {
             //Write SQL logic here
             String sql = "SELECT * FROM message WHERE message_id = ?";
@@ -111,13 +110,13 @@ public class MessageDAO {
                         rs.getLong("time_posted_epoch")
                         );
                 if (rs.getInt("message_id") == message_id) {
-                    messages.add(message);
+                    return new Message(message.getMessage_id(), message.getPosted_by(), message.getMessage_text(), message.getTime_posted_epoch());
                 }
             }
         }catch(SQLException e){
             System.out.println(e.getMessage());
         }
-        return messages;
+        return null;
      }
 }
 
