@@ -85,15 +85,22 @@ public class AccountDAO {
         }
         return null;
     }
-    
-    private boolean usernameExists(Connection connection, String username) throws SQLException {
-        String sql = "SELECT COUNT(*) FROM account WHERE username = ?";
-        PreparedStatement preparedStatement = connection.prepareStatement(sql);
-        preparedStatement.setString(1, username);
-        ResultSet resultSet = preparedStatement.executeQuery();
-        if (resultSet.next()) {
-            int count = resultSet.getInt(1);
-            return count > 0;
+    /*
+     * checks if the UsernameExists within the database
+     * used by insertAccount Method
+     */
+    private boolean usernameExists(Connection connection, String username) {
+        try {
+            String sql = "SELECT COUNT(*) FROM account WHERE username = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, username);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                int count = resultSet.getInt(1);
+                return count > 0;
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
         }
         return false;
     }

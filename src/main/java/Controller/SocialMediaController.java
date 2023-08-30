@@ -40,13 +40,11 @@ public class SocialMediaController {
         app.get("/messages", this::getAllMessagesHandler); // works
         app.post("/messages", this::postMessageHandler); // works
         app.post("/login", this::accountLogin); // works
-
+        app.get("/messages/{message_id}", this::getMessageByIDHandler);
         // app.get("/messages/1",this::getMessageByIDHandler); 
         // app.delete("/messages/{message_id}", this::deleteMessageHandler);
-
-        app.get("/messages/{message_id}",this::getMessageByIDHandler);
-
         // app.get("/accounts/1/messages",this::getAllMessagesFromUserHandler);
+        
         return app;
     }
 
@@ -85,34 +83,9 @@ public class SocialMediaController {
         }
     }
 
-    public void getAllMessagesHandler(Context ctx) {
+    private void getAllMessagesHandler(Context ctx) {
         List<Message> message = messageService.getAllMessages();
         ctx.json(message);
-    }
-
-
-
-
-    private void deleteMessageByIDHandler(Context ctx) { 
-        int message_id = Integer.parseInt(ctx.pathParam("message_id"));
-        boolean deletionSuccessful = messageService.deleteMessageByMessageID(message_id);
-        if (deletionSuccessful) {
-            ctx.status(200); // OK
-        } else {
-            ctx.status(404); // Not Found
-        }
-    }
-
-    private void getMessageByIDHandler(Context ctx) {
-        int message_id = Integer.parseInt(ctx.pathParam("message_id"));
-        Message message = messageService.getMessageByID(message_id);
-    
-        if (message != null) {
-            ctx.json(message);
-            ctx.status(200); // OK
-        } else {
-            ctx.status(404); // Not Found
-        }
     }
 
     private void accountLogin(Context ctx) throws JsonMappingException, JsonProcessingException {
@@ -129,6 +102,21 @@ public class SocialMediaController {
             ctx.status(200); // OK
         } else {
             ctx.status(401); // Unauthorized
+        }
+    }
+
+    private void getMessageByIDHandler(Context ctx) throws JsonMappingException, JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        Message message = mapper.readValue(ctx.body(), Message.class);
+
+        int message_id = message.message_id;
+        Message gotMessage = messageService.getMessageByID(message_id);
+        // System.out.println("before if statement");
+        if (gotMessage != null) {
+            ctx.json(gotMessage);
+            ctx.status(200);
+        } else {
+            ctx.status(401);
         }
     }
 }

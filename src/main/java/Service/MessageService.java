@@ -26,8 +26,14 @@ public class MessageService {
     public Message addedMessage(Message message) {
         return messageDAO.insertMessage(message);
     }
-    public boolean deleteMessageByMessageID(int message_id) {
-        return messageDAO.deleteMessageByMessageID(message_id);
+    public Message deleteMessageByMessageID(int message_id) {
+        Message messageDeleted = messageDAO.getMessageByID(message_id);
+        boolean messageExists = messageDAO.messageExists(message_id);
+        if (messageExists) {
+            return messageDeleted;
+        }
+
+        return null;
     }
 
     public Message getMessageByID(int message_id) {
