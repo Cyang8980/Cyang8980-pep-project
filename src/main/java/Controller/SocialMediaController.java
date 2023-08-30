@@ -115,16 +115,19 @@ public class SocialMediaController {
         }
     }
 
-    private void accountLogin(Context ctx) throws JsonMappingException, JsonProcessingException{
+    private void accountLogin(Context ctx) throws JsonMappingException, JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         Account account = mapper.readValue(ctx.body(), Account.class);
-
-        Account loggedInAccount = accountService.addAccount(account);
+        
+        String username = account.getUsername();
+        String password = account.getPassword();
+    
+        Account loggedInAccount = accountService.login(username, password);
         
         if (loggedInAccount != null) {
-            ctx.status(200);
+            ctx.status(200); // OK
         } else {
-            ctx.status(401);
+            ctx.status(401); // Unauthorized
         }
     }
 }
