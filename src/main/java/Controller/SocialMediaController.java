@@ -34,12 +34,15 @@ public class SocialMediaController {
      */
     public Javalin startAPI() {
         Javalin app = Javalin.create();
-        app.get("/accounts", this::getAllAccountsHandler);
+        app.get("/accounts", this::getAllAccountsHandler); // not tested
         app.post("/register", this::postAccountHandler); // works
         app.get("/messages", this::getAllMessagesHandler); // works
         app.post("/messages", this::postMessageHandler); // works
-        app.delete("/messages/1",this::deleteMessageHandler);
-        app.get("/message/1",this::getAllMessagesByIDHandler);
+
+        app.get("/messages/1",this::getMessageByIDHandler);
+        // app.delete("/messages/{message_id}", this::deleteMessageHandler);
+
+        app.get("/message/1",this::getMessageByIDHandler);
         app.post("/login", this::accountLogin);
         // app.get("/accounts/1/messages",this::getAllMessagesFromUserHandler);
         return app;
@@ -94,12 +97,20 @@ public class SocialMediaController {
             ctx.status(404); // Not Found
         }
     }
-    public void getAllMessagesByIDHandler(Context ctx) {
+
+    private void getMessageByIDHandler(Context ctx) {
         int message_id = Integer.parseInt(ctx.pathParam("message_id"));
-        List<Message> message = messageService.getAllMessagesByID(message_id);
-        ctx.json(message);
+        List<Message> message = messageService.getMessagesByID(message_id);
+    
+        if (message != null) {
+            ctx.status(200); // OK
+            ctx.json(message);
+        } else {
+            ctx.status(404); // Not Found
+        }
     }
-    public void accountLogin(Context ctx){
+
+    private void accountLogin(Context ctx){
         // Extract user input from the request
         String username = ctx.formParam("username");
         String password = ctx.formParam("password");
