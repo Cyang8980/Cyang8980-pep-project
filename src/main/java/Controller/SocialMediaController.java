@@ -41,9 +41,9 @@ public class SocialMediaController {
         app.post("/messages", this::postMessageHandler); // works
         app.post("/login", this::accountLogin); // works
         app.get("/messages/{message_id}", this::getMessageByIDHandler); // works
-        app.put("/messages/{message_text}", this::updateMessageHandler); // works
+        app.patch("/messages/{message_id}", this::updateMessageHandler); 
         app.delete("/messages/{message_id}", this::deleteMessageByIDHandler); // works
-        app.get("/accounts/{posted_by}/messages",this::getAllMessagesPostedBy);
+        app.get("/accounts/{posted_by}/messages",this::getAllMessagesPostedBy); // works
         
         return app;
     }
@@ -125,21 +125,22 @@ public class SocialMediaController {
     }
 
     private void updateMessageHandler(Context ctx) throws JsonMappingException, JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();
-        Message message = mapper.readValue(ctx.body(), Message.class);
+        try {
+            int message_id = Integer.parseInt(ctx.pathParam("message_id"));
+            ObjectMapper mapper = new ObjectMapper();
+            Message message = mapper.readValue(ctx.body(), Message.class);
 
-        int message_id = message.getMessage_id();
-        String message_text = message.getMessage_text();
-
-        Message gotMessage = messageService.getMessageByID(message_id);
-
-        // System.out.println("before if statement");
-        if (gotMessage != null) {
-            gotMessage.setMessage_text(message_text);
-            ctx.json(gotMessage);
-            ctx.status(200);
-        } else {
-            ctx.status(401);
+            Message gotMessage = messageService.getMessageByID(message_id);
+            if (gotMessage != null && message.getMessage_text() != "" && message.getMessage_text().length() < 254) {
+                    gotMessage.setMessage_text(message.getMessage_text());    
+                    ctx.json(gotMessage);
+                    ctx.status(200);
+            } else {
+                ctx.status(400); // Not Found
+            }
+        } catch (NumberFormatException e) {
+            ctx.status(400); // Bad Request
+            ctx.result("Invalid message_id format");
         }
     }
 
@@ -152,7 +153,4 @@ public class SocialMediaController {
         ctx.status(200);
     }
 
-    private void updateMessage(Context ctx) {
-        
-    }
 }
