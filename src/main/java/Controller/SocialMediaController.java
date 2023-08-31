@@ -41,7 +41,7 @@ public class SocialMediaController {
         app.post("/messages", this::postMessageHandler); // works
         app.post("/login", this::accountLogin); // works
         app.get("/messages/{message_id}", this::getMessageByIDHandler);
-        // app.get("/messages/1",this::getMessageByIDHandler); 
+        app.put("/messages/{message_text}", this::updateMessageHandler);
         // app.delete("/messages/{message_id}", this::deleteMessageHandler);
         // app.get("/accounts/1/messages",this::getAllMessagesFromUserHandler);
         
@@ -109,10 +109,28 @@ public class SocialMediaController {
         ObjectMapper mapper = new ObjectMapper();
         Message message = mapper.readValue(ctx.body(), Message.class);
 
-        int message_id = message.message_id;
+        int message_id = message.getMessage_id();
         Message gotMessage = messageService.getMessageByID(message_id);
         // System.out.println("before if statement");
         if (gotMessage != null) {
+            ctx.json(gotMessage);
+            ctx.status(200);
+        } else {
+            ctx.status(401);
+        }
+    }
+    private void updateMessageHandler(Context ctx) throws JsonMappingException, JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        Message message = mapper.readValue(ctx.body(), Message.class);
+
+        int message_id = message.getMessage_id();
+        String message_text = message.getMessage_text();
+
+        Message gotMessage = messageService.getMessageByID(message_id);
+
+        // System.out.println("before if statement");
+        if (gotMessage != null) {
+            gotMessage.setMessage_text(message_text);
             ctx.json(gotMessage);
             ctx.status(200);
         } else {
