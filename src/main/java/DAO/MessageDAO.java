@@ -13,7 +13,7 @@ import java.util.List;
 
 public class MessageDAO {
     /*
-     * get all Messages
+     * get all Messages that exist
      */
     public List<Message> getAllMessages(){
         Connection connection = ConnectionUtil.getConnection();
@@ -38,7 +38,7 @@ public class MessageDAO {
         return messages;
     }
     /*
-     * deleting a message
+     * deleting a message based on message_id
      */
     public Message deleteMessageByMessageID(int message_id) {
         Connection connection = ConnectionUtil.getConnection();
@@ -59,7 +59,7 @@ public class MessageDAO {
         return null;
     }
     /*
-     * inserting a message
+     * inserting a message to the database
      */
 
     public Message insertMessage(Message message) {
@@ -94,7 +94,7 @@ public class MessageDAO {
     }
     
     /*
-     * get all messgages given username
+     * get message based on message_id
      */
 
     public Message getMessageByID(int message_id) {
@@ -119,6 +119,31 @@ public class MessageDAO {
         return null;
     }
     /*
+     * get all messages based on a the unique postedBy ID
+     */
+    public List<Message> getMessagesGivenPostedBy(int posted_by) {
+        Connection connection = ConnectionUtil.getConnection();      
+        List<Message> messages = new ArrayList<>();
+        try {
+            //Write SQL logic here
+            String sql = "SELECT * FROM message WHERE posted_by = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setInt(1, posted_by);
+            ResultSet rs = preparedStatement.executeQuery();
+            while(rs.next()) {
+                Message message = new Message(rs.getInt("message_id"),
+                        rs.getInt("posted_by"),
+                        rs.getString("message_text"),
+                        rs.getLong("time_posted_epoch")
+                        );
+                messages.add(message);
+            }
+        }catch(SQLException e){
+            System.out.println(e.getMessage());
+        }
+        return messages;
+    }
+    /*
      * check if message exists given message_id, used by other methods
      */
     public boolean messageExists (int message_id) {
@@ -141,5 +166,6 @@ public class MessageDAO {
         }
         return false;
     }
+
 }
 
