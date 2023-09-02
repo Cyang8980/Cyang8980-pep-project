@@ -55,7 +55,11 @@ public class SocialMediaController {
     private void exampleHandler(Context context) {
         context.json("sample text");
     }
-
+    /**
+     * create a handler that handles creating accounts
+     * @param context that contains an account object
+     * @return the added account as if account was successfully created and status 400 if not
+     */
     private void postAccountHandler(Context ctx) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         Account account = mapper.readValue(ctx.body(), Account.class);
@@ -67,11 +71,25 @@ public class SocialMediaController {
         }
     }
 
+    /**
+     * create a handler that gets all accounts that exist in the database
+     * An ISBN will be provided in Book. Method should check if the book ISBN already exists before it attempts to
+     * persist it.
+     * @param context a context object
+     * @return an arraylist of all accounts that exist
+     */
+
     private void getAllAccountsHandler(Context ctx) {
         List<Account> accounts = accountService.getAllAccounts();
         ctx.json(accounts);
     }
 
+    /**
+     * create a handler that reads info and writes a new message
+     * a message body will be provided to create the new message
+     * @param context a context object
+     * @return the message if the message was created successfully
+     */
     private void postMessageHandler(Context ctx) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         Message message = mapper.readValue(ctx.body(), Message.class);
