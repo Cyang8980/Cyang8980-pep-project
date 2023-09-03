@@ -12,9 +12,12 @@ import java.util.List;
  */
 
 public class MessageDAO {
-    /*
-     * get all Messages that exist
+    
+    /**
+     * get all messages that exist in the database
+     * @return A list of all message that exist in the database
      */
+    
     public List<Message> getAllMessages(){
         Connection connection = ConnectionUtil.getConnection();
         List<Message> messages = new ArrayList<>();
@@ -37,9 +40,15 @@ public class MessageDAO {
         }
         return messages;
     }
-    /*
+    
+    /**
      * deleting a message based on message_id
+     * call the getMessageByID method to obtain the message based on message_ID
+     * doing this you check if the message exists and then you delete it
+     * @param int message_id
+     * @return the message that was deleted
      */
+    
     public Message deleteMessageByMessageID(int message_id) {
         Connection connection = ConnectionUtil.getConnection();
         try {
@@ -58,8 +67,12 @@ public class MessageDAO {
         }
         return null;
     }
-    /*
-     * inserting a message to the database
+    
+    /**
+     * insert a new message object to the database
+     * the message constraint is that it can't be empty and it can't be longer than 254
+     * @param Message message
+     * @return the message that was added to the database
      */
 
     public Message insertMessage(Message message) {
@@ -70,7 +83,6 @@ public class MessageDAO {
             String sql = "INSERT INTO message (posted_by, message_text, time_posted_epoch) VALUES (?, ?, ?)";
             PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 
-            // Write preparedStatement's setXXX methods here.
             preparedStatement.setInt(1, message.getPosted_by());
             preparedStatement.setString(2, message.getMessage_text());
             preparedStatement.setLong(3, message.getTime_posted_epoch());
@@ -93,8 +105,10 @@ public class MessageDAO {
         return null;
     }
     
-    /*
+    /**
      * get message based on message_id
+     * @param int message_id
+     * @return the message that was matched with the message id else null
      */
 
     public Message getMessageByID(int message_id) {
@@ -118,9 +132,13 @@ public class MessageDAO {
         }
         return null;
     }
-    /*
-     * get all messages based on a the unique postedBy ID
+    
+    /**
+     * get message based on posted_by
+     * @param int posted_by
+     * @return list of all messages that match the posted_by, else an empty list
      */
+
     public List<Message> getMessagesGivenPostedBy(int posted_by) {
         Connection connection = ConnectionUtil.getConnection();      
         List<Message> messages = new ArrayList<>();
@@ -131,7 +149,7 @@ public class MessageDAO {
 
             preparedStatement.setInt(1, posted_by);
             ResultSet rs = preparedStatement.executeQuery();
-            
+
             while(rs.next()) {
                 Message message = new Message(rs.getInt("message_id"),
                         rs.getInt("posted_by"),
@@ -145,9 +163,13 @@ public class MessageDAO {
         }
         return messages;
     }
-    /*
-     * check if message exists given message_id, used by other methods
+    
+    /**
+     * check if the message exists in database based on message_id
+     * @param int message_id
+     * @return the message that was matched with the message id else null
      */
+
     public boolean messageExists (int message_id) {
         Connection connection = ConnectionUtil.getConnection();      
         try {
