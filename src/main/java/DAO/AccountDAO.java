@@ -9,9 +9,11 @@ import java.util.List;
 
 public class AccountDAO {
     
-    /*
-     * get all accounts from the Account table
+    /**
+     * create a method to get a List of all accoutns
+     * @return an arraylist of all accounts that exist
      */
+
     public List<Account> getAllAccounts() {
         Connection connection = ConnectionUtil.getConnection();
         List<Account> accounts = new ArrayList<>();
@@ -29,9 +31,13 @@ public class AccountDAO {
         }
         return accounts;
     }
-    /*
-     * get account based on account_id
+
+    /**
+     * get an account based on account ID
+     * @param int account ID
+     * @return an account object if account exists else null
      */
+
     public Account getAccountWithID(int account_id) {
         Connection connection = ConnectionUtil.getConnection();
         try {
@@ -53,8 +59,12 @@ public class AccountDAO {
         }
         return null;
     }
-    /*
-     * insert an account into the Account table
+    /**
+     * create an account given account information
+     * if account exists return null
+     * password and username have constraints (password length > 4, username has to be unique)
+     * @param Account account
+     * @return the new generated account object if account exists else null
      */
     public Account insertAccount(Account account) {
         Connection connection = ConnectionUtil.getConnection();
@@ -85,9 +95,11 @@ public class AccountDAO {
         }
         return null;
     }
-    /*
-     * checks if the UsernameExists within the database
-     * used by insertAccount Method
+    /**
+     * checks if username already exists
+     * @param Connection connection
+     * @param String username
+     * @return true if username exists, else false
      */
     private boolean usernameExists(Connection connection, String username) {
         try {
@@ -104,6 +116,12 @@ public class AccountDAO {
         }
         return false;
     }
+    /**
+     * checks if account exists
+     * @param String password
+     * @param String username
+     * @return true if username exists, else false
+     */
     
     public Account AccountExists(String username, String password) {
         try{
