@@ -1,6 +1,5 @@
 package Controller;
 
-import java.sql.SQLException;
 import java.util.List;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -49,15 +48,9 @@ public class SocialMediaController {
     }
 
     /**
-     * This is an example handler for an example endpoint.
-     * @param context The Javalin Context object manages information about both the HTTP request and response.
-     */
-    private void exampleHandler(Context context) {
-        context.json("sample text");
-    }
-    /**
      * create a handler that handles creating accounts
      * @param context that contains an account object
+     * use the context object through an object mapper to get the information needed to check
      * @return the added account as if account was successfully created and status 400 if not
      */
     private void postAccountHandler(Context ctx) throws JsonProcessingException {
@@ -76,6 +69,7 @@ public class SocialMediaController {
      * An ISBN will be provided in Book. Method should check if the book ISBN already exists before it attempts to
      * persist it.
      * @param context a context object
+     * use the context object through an object mapper to get the information needed to check
      * @return an arraylist of all accounts that exist
      */
 
@@ -88,6 +82,7 @@ public class SocialMediaController {
      * create a handler that reads info and writes a new message
      * a message body will be provided to create the new message
      * @param context a context object
+     * use the context object through an object mapper to get the information needed to check
      * @return the message if the message was created successfully
      */
     private void postMessageHandler(Context ctx) throws JsonProcessingException {
@@ -101,10 +96,23 @@ public class SocialMediaController {
         }
     }
 
+    /**
+     * create a handler that gets all messages that exist in the database
+     * @param context a context object 
+     * @return the List of all messages that exist in the databse
+     */
+
     private void getAllMessagesHandler(Context ctx) {
         List<Message> message = messageService.getAllMessages();
         ctx.json(message);
     }
+
+    /**
+     * create a handler that checks if a login exists before a user logs in
+     * @param context a context object 
+     * use the context object through an object mapper to get the information needed to check
+     * @return the account information if login successful
+     */
 
     private void accountLogin(Context ctx) throws JsonMappingException, JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
@@ -123,15 +131,28 @@ public class SocialMediaController {
         }
     }
 
+     /**
+     * create a handler that checks if a message exists
+     * @param context a context object 
+     * use the pathParam to obtain the message_id
+     * @return the message that matches the messageID
+     */
+
     private void getMessageByIDHandler(Context ctx) throws JsonMappingException, JsonProcessingException {
         int message_id = Integer.parseInt(ctx.pathParam("message_id"));
         Message gotMessage = messageService.getMessageByID(message_id);
-    
         if (gotMessage != null) {
             ctx.json(gotMessage);
         }
         ctx.status(200);
     }
+
+     /**
+     * create a handler that checks if a message exists and if so, delete that message
+     * @param context a context object 
+     * use the pathParam to obtain the message_id
+     * @return the message that matches the messageID
+     */
 
     private void deleteMessageByIDHandler(Context ctx) {
         int message_id = Integer.parseInt(ctx.pathParam("message_id"));
@@ -141,6 +162,13 @@ public class SocialMediaController {
         }
         ctx.status(200);
     }
+
+     /**
+     * create a handler that checks if a message exists and if so, change the message_text
+     * @param context a context object 
+     * use the context object through an object mapper to get the information needed
+     * @return the updated message Object
+     */
 
     private void updateMessageHandler(Context ctx) throws JsonMappingException, JsonProcessingException {
         try {
@@ -162,6 +190,12 @@ public class SocialMediaController {
         }
     }
 
+    /**
+     * create a handler that gets all the messages given the posted_by ID
+     * @param context a context object 
+     * @return a List that contains messages that matches the posted_by ID
+     */
+
     private void getAllMessagesPostedBy(Context ctx) {
         int posted_by = Integer.parseInt(ctx.pathParam("posted_by"));
         List<Message> messages = messageService.getAllMessagesFromPostedBy(posted_by);
@@ -170,5 +204,4 @@ public class SocialMediaController {
         }
         ctx.status(200);
     }
-
 }

@@ -128,8 +128,10 @@ public class MessageDAO {
             //Write SQL logic here
             String sql = "SELECT * FROM message WHERE posted_by = ?";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
+
             preparedStatement.setInt(1, posted_by);
             ResultSet rs = preparedStatement.executeQuery();
+            
             while(rs.next()) {
                 Message message = new Message(rs.getInt("message_id"),
                         rs.getInt("posted_by"),
@@ -138,7 +140,7 @@ public class MessageDAO {
                         );
                 messages.add(message);
             }
-        }catch(SQLException e){
+        }catch(SQLException e) {
             System.out.println(e.getMessage());
         }
         return messages;
